@@ -22,6 +22,9 @@ app.use(
     credentials: true,
   })
 );
+app.use("/",(req,res )=>{
+    res.send("server is running ")
+})
 
 app.use("/uploads/profiles", express.static("uploads/profiles"));
 app.use("/uploads/files", express.static("uploads/files"));
