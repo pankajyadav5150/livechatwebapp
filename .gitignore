@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Build output
 node_modules
 dist
 dist-ssr
@@ -23,4 +24,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore uploads (optional, for uploads folder)
 server/uploads
+
+# Ignore env files in client and server
+client/.env*
+server/.env*
+client*

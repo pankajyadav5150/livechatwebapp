@@ -14,12 +14,17 @@ const createToken = (email, userId) => {
 export const signup = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    console.log("Signup request received:", { email });
+    
     if (email && password) {
       const user = await User.create({ email, password });
+      console.log("User created successfully:", user.id);
+      
       res.cookie("jwt", createToken(email, user.id), {
         maxAge,
-        secure: true,
-        sameSite: "None",
+        secure: false, // Set to false for development (localhost)
+        sameSite: "Lax",
+        httpOnly: true,
       });
 
       return res.status(201).json({
@@ -36,7 +41,10 @@ export const signup = async (req, res, next) => {
       return res.status(400).send("Email and Password Required");
     }
   } catch (err) {
-    console.log(err);
+    console.error("Signup error:", err);
+    if (err.code === 11000) {
+      return res.status(400).send("Email already exists");
+    }
     return res.status(500).send("Internal Server Error");
   }
 };
@@ -55,8 +63,9 @@ export const login = async (req, res, next) => {
       }
       res.cookie("jwt", createToken(email, user.id), {
         maxAge,
-        secure: true,
-        sameSite: "None",
+        secure: false, // Set to false for development (localhost)
+        sameSite: "Lax",
+        httpOnly: true,
       });
       return res.status(200).json({
         user: {
@@ -104,7 +113,7 @@ export const getUserInfo = async (request, response, next) => {
 
 export const logout = async (request, response, next) => {
   try {
-    response.cookie("jwt", "", { maxAge: 1, secure: true, sameSite: "None" });
+    response.cookie("jwt", "", { maxAge: 1, secure: false, sameSite: "Lax", httpOnly: true });
     return response.status(200).send("Logout successful");
   } catch (err) {
     return response.status(500).send("Internal Server Error");
